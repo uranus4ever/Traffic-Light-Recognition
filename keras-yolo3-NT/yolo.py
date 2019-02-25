@@ -134,7 +134,7 @@ class YOLO(object):
             predicted_class = self.class_names[c]
             box = out_boxes[i]
             score = out_scores[i]
-            if predicted_class == 'traffic light':
+            if (predicted_class == 'traffic light') & (score >= 0.60):
                 label = '{} {:.2f}'.format(predicted_class, score)
                 draw = ImageDraw.Draw(image)
                 label_size = draw.textsize(label, font)
