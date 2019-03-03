@@ -1,6 +1,10 @@
 A traffic lights detector based on keras-yolo3.
 
-The origin info. is shown below.
+The converted model weight is here:
+
+链接:https://pan.baidu.com/s/1OzHmpKJP0Fl-rJHMr00Ytg  密码:p9ou
+
+The origin info. is shown below:
 
 
 # keras-yolo3
