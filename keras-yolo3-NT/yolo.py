@@ -144,7 +144,7 @@ class YOLO(object):
                 left = max(0, np.floor(left + 0.5).astype('int32'))
                 bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
                 right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
-                # print(label, (left, top), (right, bottom))
+                print(label, (top, left), (bottom, right))
 
                 if top - label_size[1] >= 0:
                     text_origin = np.array([left, top - label_size[1]])
@@ -162,7 +162,7 @@ class YOLO(object):
                 draw.text(text_origin, label, fill=(0, 0, 0), font=font)
                 del draw
 
-        end = timer()
+        # end = timer()
         # print(end - start)
         return image
 
