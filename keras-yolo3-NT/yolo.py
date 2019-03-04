@@ -150,16 +150,18 @@ class YOLO(object):
             if (predicted_class == 'traffic light') and (score >= 0.60):
                 box_colour_detect = left, top, right, bottom
                 roi = image.crop(box_colour_detect)
-                R, G, B = roi.split()
+                # R, G, B = roi.split()
+                B, G, R = roi.split()
                 R_mean = np.mean(R)
                 G_mean = np.mean(G)
                 B_mean = np.mean(B)
-                print(R_mean, G_mean, B_mean)
+                # print(R_mean, G_mean, B_mean)
                 if (R_mean > G_mean) or (R_mean > B_mean):
-                    colour = "Red"
+                    colour = "Red Light"
                 else:
-                    colour = "Green"
-                label = '{} \n{} {:.2f}'.format(predicted_class, colour, score)
+                    colour = "Green Light"
+                # label = '{} \n{} {:.2f}'.format(predicted_class, colour, score)
+                label = '{}'.format(colour)
                 draw = ImageDraw.Draw(image)
                 label_size = draw.textsize(label, font)
 
