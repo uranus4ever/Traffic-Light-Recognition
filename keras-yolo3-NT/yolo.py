@@ -18,6 +18,19 @@ from yolo3.utils import letterbox_image
 import os
 from keras.utils import multi_gpu_model
 
+
+def detect_colour(box, image):
+    # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    roi = get_roi(box, image)
+    R, G, B = cv2.split(roi)
+    R_mean = np.mean(R)
+    G_mean = np.mean(G)
+    B_mean = np.mean(B)
+    if R_mean * 2 > B_mean + G_mean:
+        return "Red Light"
+    else:
+        return "Green Light"
+
 class YOLO(object):
     _defaults = {
         "model_path": 'model_data/yolo.h5',
@@ -101,7 +114,6 @@ class YOLO(object):
 
     def detect_image(self, image):
         # start = timer()
-
         if self.model_image_size != (None, None):
             assert self.model_image_size[0]%32 == 0, 'Multiples of 32 required'
             assert self.model_image_size[1]%32 == 0, 'Multiples of 32 required'
@@ -134,12 +146,24 @@ class YOLO(object):
             predicted_class = self.class_names[c]
             box = out_boxes[i]
             score = out_scores[i]
-            if (predicted_class == 'traffic light') & (score >= 0.60):
-                label = '{} {:.2f}'.format(predicted_class, score)
+            top, left, bottom, right = box
+            if (predicted_class == 'traffic light') and (score >= 0.60):
+                box_colour_detect = left, top, right, bottom
+                roi = image.crop(box_colour_detect)
+                R, G, B = roi.split()
+                R_mean = np.mean(R)
+                G_mean = np.mean(G)
+                B_mean = np.mean(B)
+                print(R_mean, G_mean, B_mean)
+                if (R_mean > G_mean) or (R_mean > B_mean):
+                    colour = "Red"
+                else:
+                    colour = "Green"
+                label = '{} \n{} {:.2f}'.format(predicted_class, colour, score)
                 draw = ImageDraw.Draw(image)
                 label_size = draw.textsize(label, font)
 
-                top, left, bottom, right = box
+                # top, left, bottom, right = box
                 top = max(0, np.floor(top + 0.5).astype('int32'))
                 left = max(0, np.floor(left + 0.5).astype('int32'))
                 bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
