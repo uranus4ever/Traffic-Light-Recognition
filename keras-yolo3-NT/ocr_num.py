@@ -1,4 +1,5 @@
 from PIL import Image
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -27,8 +28,8 @@ ax = plt.subplot(2, 3, 2)
 ax.set_title('ROI')
 ax.imshow(roi)
 ax = plt.subplot(2, 3, 3)
-ax.set_title('Bin')
-ax.imshow(roi_bin)
+ax.set_title('blur')
+ax.imshow(blur)
 ax = plt.subplot(2, 3, 4)
 ax.set_title('R')
 ax.imshow(R, cmap='binary')
