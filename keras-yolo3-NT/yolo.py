@@ -18,19 +18,6 @@ from yolo3.utils import letterbox_image
 import os
 from keras.utils import multi_gpu_model
 
-
-def detect_colour(box, image):
-    # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    roi = get_roi(box, image)
-    R, G, B = cv2.split(roi)
-    R_mean = np.mean(R)
-    G_mean = np.mean(G)
-    B_mean = np.mean(B)
-    if R_mean * 2 > B_mean + G_mean:
-        return "Red Light"
-    else:
-        return "Green Light"
-
 class YOLO(object):
     _defaults = {
         "model_path": 'model_data/yolo.h5',
@@ -148,20 +135,22 @@ class YOLO(object):
             score = out_scores[i]
             top, left, bottom, right = box
             if (predicted_class == 'traffic light') and (score >= 0.60):
-                box_colour_detect = left, top, right, bottom
-                roi = image.crop(box_colour_detect)
-                # R, G, B = roi.split()
-                B, G, R = roi.split()
-                R_mean = np.mean(R)
-                G_mean = np.mean(G)
-                B_mean = np.mean(B)
-                # print(R_mean, G_mean, B_mean)
-                if (R_mean > G_mean) or (R_mean > B_mean):
-                    colour = "Red Light"
-                else:
-                    colour = "Green Light"
-                # label = '{} \n{} {:.2f}'.format(predicted_class, colour, score)
-                label = '{}'.format(colour)
+                # box_colour_detect = left, top, right, bottom
+                box_ocr = left, top, right, bottom
+                # roi = image.crop(box_colour_detect)
+                roi = image.crop(box_ocr)
+                # # R, G, B = roi.split()  # for image
+                # B, G, R = roi.split()  # for video
+                # R_mean = np.mean(R)
+                # G_mean = np.mean(G)
+                # B_mean = np.mean(B)
+                # # print(R_mean, G_mean, B_mean)
+                # if (R_mean > G_mean) or (R_mean > B_mean):
+                #     colour = "Red Light"
+                # else:
+                #     colour = "Green Light"
+                label = '{} \n {:.2f}'.format(predicted_class, score)
+                # label = '{}'.format(colour)
                 draw = ImageDraw.Draw(image)
                 label_size = draw.textsize(label, font)
 
