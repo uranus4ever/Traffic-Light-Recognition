@@ -6,7 +6,6 @@ Class definition of YOLO_v3 style detection model on image and video
 import colorsys
 import os
 from timeit import default_timer as timer
-import cv2
 
 import numpy as np
 from keras import backend as K
@@ -137,9 +136,9 @@ class YOLO(object):
             top, left, bottom, right = box
             if (predicted_class == 'traffic light') and (score >= 0.60):
                 # box_colour_detect = left, top, right, bottom
-                # box_ocr = left, top, right, bottom
+                box_ocr = left, top, right, bottom
                 # roi = image.crop(box_colour_detect)
-                # roi = image.crop(box_ocr)
+                roi = image.crop(box_ocr)
                 # # R, G, B = roi.split()  # for image
                 # B, G, R = roi.split()  # for video
                 # R_mean = np.mean(R)
@@ -150,8 +149,7 @@ class YOLO(object):
                 #     colour = "Red Light"
                 # else:
                 #     colour = "Green Light"
-                # label = '{} \n {:.2f}'.format(predicted_class, score)
-                label = '{}{:.2f}'.format('TL', score)
+                label = '{} \n {:.2f}'.format(predicted_class, score)
                 # label = '{}'.format(colour)
                 draw = ImageDraw.Draw(image)
                 label_size = draw.textsize(label, font)
@@ -187,6 +185,7 @@ class YOLO(object):
         self.sess.close()
 
 def detect_video(yolo, video_path, output_path=""):
+    import cv2
     vid = cv2.VideoCapture(video_path)
     if not vid.isOpened():
         raise IOError("Couldn't open webcam or video")
@@ -204,11 +203,9 @@ def detect_video(yolo, video_path, output_path=""):
     prev_time = timer()
     while True:
         return_value, frame = vid.read()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image = Image.fromarray(frame)
         image = yolo.detect_image(image)
         result = np.asarray(image)
-        result = cv2.cvtColor(result, cv2.COLOR_BGR2RGB)
         curr_time = timer()
         exec_time = curr_time - prev_time
         prev_time = curr_time
